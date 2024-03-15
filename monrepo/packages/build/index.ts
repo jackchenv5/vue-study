@@ -1,0 +1,1 @@
+export const Fn = ()=>{console.log('build function')}

@@ -1,0 +1,3 @@
+#monorepo 配置目录
+packages:
+  - 'internal/*'
