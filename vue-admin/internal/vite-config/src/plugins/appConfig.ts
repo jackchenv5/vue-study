@@ -34,7 +34,6 @@ async function createAppConfigPlugin({
     },
     async transformIndexHtml(html) {
       publicPath = publicPath.endsWith('/') ? publicPath : `${publicPath}/`;
-
       const appConfigSrc = `${
         publicPath || '/'
       }${GLOBAL_CONFIG_FILE_NAME}?v=${version}-${createContentHash(source)}`;

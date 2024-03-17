@@ -21,15 +21,18 @@ function defineApplicationConfig(defineOptions: DefineOptions = {}) {
   return defineConfig(async ({ command, mode }) => {
     const root = process.cwd();
     const isBuild = command === 'build';
-    const { VITE_PUBLIC_PATH, VITE_USE_MOCK, VITE_BUILD_COMPRESS, VITE_ENABLE_ANALYZE } = loadEnv(mode, root);
-
-    const defineData = await createDefineData(root);
+    const envConfig = loadEnv(mode,root);
+    // console.log('env config====',envConfig);
+    // const { VITE_PUBLIC_PATH, VITE_USE_MOCK, VITE_BUILD_COMPRESS, VITE_ENABLE_ANALYZE } = loadEnv(mode, root);
+    // const defineData = await createDefineData(root);
+    // 构建插件
+    const {VITE_PUBLIC_PATH} = loadEnv(mode,root);
     const plugins = await createPlugins({
       isBuild,
       root,
-      enableAnalyze: VITE_ENABLE_ANALYZE === 'true',
-      enableMock: VITE_USE_MOCK === 'true',
-      compress: VITE_BUILD_COMPRESS,
+      enableAnalyze: false,
+      enableMock: false,
+      compress: 'false'
     });
 
     const pathResolve = (pathname: string) => resolve(root, '.', pathname);
@@ -38,23 +41,19 @@ function defineApplicationConfig(defineOptions: DefineOptions = {}) {
       base: VITE_PUBLIC_PATH,
       resolve: {
         alias: [
-          {
-            find: 'vue-i18n',
-            replacement: 'vue-i18n/dist/vue-i18n.cjs.js',
-          },
           // @/xxxx => src/xxxx
           {
             find: /@\//,
             replacement: pathResolve('src') + '/',
           },
           // #/xxxx => types/xxxx
-          {
-            find: /#\//,
-            replacement: pathResolve('types') + '/',
-          },
+          // {
+          //   find: /#\//,
+          //   replacement: pathResolve('types') + '/',
+          // },
         ],
       },
-      define: defineData,
+      // define: defineData,
       build: {
         target: 'es2015',
         cssTarget: 'chrome80',
@@ -62,30 +61,32 @@ function defineApplicationConfig(defineOptions: DefineOptions = {}) {
           output: {
             // 入口文件名
             entryFileNames: `assets/entry/[name]-[hash]-${timestamp}.js`,
-            manualChunks: {
-              vue: ['vue', 'pinia', 'vue-router'],
-              antd: ['ant-design-vue', '@ant-design/icons-vue'],
-            },
+            // manualChunks: {
+            //   vue: ['vue', 'pinia', 'vue-router'],
+            //   antd: ['ant-design-vue', '@ant-design/icons-vue'],
+            // },
           },
         },
       },
-      css: {
-        preprocessorOptions: {
-          less: {
-            modifyVars: generateModifyVars(),
-            javascriptEnabled: true,
-          },
-        },
-      },
+      // css: {
+      //   preprocessorOptions: {
+      //     less: {
+      //       modifyVars: generateModifyVars(),
+      //       javascriptEnabled: true,
+      //     },
+      //   },
+      // },
       plugins,
     };
 
     const mergedConfig = mergeConfig(commonConfig(mode), applicationConfig);
-
+    // console.log('mergeConfig=========>',mergedConfig)
+    // throw Error('exit');
     return mergeConfig(mergedConfig, overrides);
   });
 }
 
+//定义全局常量。可以在代码中直接使用
 async function createDefineData(root: string) {
   try {
     const pkgJson = await readPackageJSON(root);
