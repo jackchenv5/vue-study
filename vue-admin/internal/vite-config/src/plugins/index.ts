@@ -27,7 +27,7 @@ async function createPlugins({ isBuild, root, enableMock, compress, enableAnalyz
 
 
   // vite-plugin-html
-  // vitePlugins.push(configHtmlPlugin({ isBuild }));
+  vitePlugins.push(configHtmlPlugin({ isBuild }));
 
   // vite-plugin-svg-icons
   // vitePlugins.push(configSvgIconsPlugin({ isBuild }));
